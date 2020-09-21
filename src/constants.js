@@ -1,6 +1,8 @@
-export const apiKey = "YOUR_API_KEY";
-export const sessionId = "YOUR_SESSION_ID";
-export const token = "YOUR_TOKEN";
+export const apiKey = "46924514";
+export const sessionId =
+  "1_MX40NjkyNDUxNH5-MTYwMDcxMjQ1NTYzNH5kcTAzNHhzQnhUNUF2M0pzSjhFK0hrVWN-fg";
+export const token =
+  "T1==cGFydG5lcl9pZD00NjkyNDUxNCZzaWc9NDViNDI0YzY1N2NmZmU2ZGU2Njk1ZTJkOGJjNmRjZmZhZTZiYWEyZDpzZXNzaW9uX2lkPTFfTVg0ME5qa3lORFV4Tkg1LU1UWXdNRGN4TWpRMU5UWXpOSDVrY1RBek5IaHpRbmhVTlVGMk0wcHpTamhGSzBoclZXTi1mZyZjcmVhdGVfdGltZT0xNjAwNzEyNDY1Jm5vbmNlPTAuNjM0OTU5NzA3NTI4MDE2MiZyb2xlPXB1Ymxpc2hlciZleHBpcmVfdGltZT0xNjAzMzA0NDYzJmluaXRpYWxfbGF5b3V0X2NsYXNzX2xpc3Q9";
 
 // You'll need to adjust the code above by hard coding the values for the apiKey, sessionId and
 // token. To do this, log into your TokBox Account, either create a new OpenTok API project
