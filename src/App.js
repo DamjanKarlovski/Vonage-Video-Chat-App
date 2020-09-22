@@ -8,11 +8,10 @@ function App() {
   return (
     <div className="App">
       <div className="nav-bar">
-        <div className="title">
-          <img src={logoIcon} alt="logo icon" className="logoIcon" />
-          <p>Dianurse Video Chat Application</p>
-        </div>
         <img src={logo} alt="dianurse logo" className="logo" />
+        <p>Video Chat Application</p>
+
+        <img src={logoIcon} alt="logo icon" className="logoIcon" />
       </div>
       <VideoChatComponent />
     </div>
