@@ -8,22 +8,21 @@ function handleError(error) {
   }
 }
 
-let session, publisher, subscriber;
+let session, publisher, subscriber, screenPreview, pubOptions;
 
 export function initializeSession(apiKey, sessionId, token) {
   session = OT.initSession(apiKey, sessionId);
 
+  // set publish options
+  pubOptions = {
+    insertMode: "append",
+    style: { buttonDisplayMode: "off" },
+    width: "100%",
+    height: "100%",
+    // videoSource: "camera",
+  };
   // Create a publisher
-  publisher = OT.initPublisher(
-    "publisher",
-    {
-      insertMode: "append",
-      style: { buttonDisplayMode: "off" },
-      width: "100%",
-      height: "100%",
-    },
-    handleError
-  );
+  publisher = OT.initPublisher("publisher", pubOptions, handleError);
 
   // Subscribing to stream
   session.on("streamCreated", function (event) {
@@ -74,4 +73,17 @@ export function toggleAudioSubscribtion(state) {
 }
 export function toggleVideoSubscribtion(state) {
   subscriber.subscribeToVideo(state);
+}
+
+export function toggleScreenShare(state) {
+  if (state === true) {
+    screenPreview = OT.initPublisher(
+      "screen-preview",
+      { videoSource: "screen" },
+      handleError
+    );
+    session.publish(screenPreview, handleError);
+  } else {
+    session.unpublish(screenPreview);
+  }
 }

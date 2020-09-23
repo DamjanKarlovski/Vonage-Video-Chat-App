@@ -8,6 +8,8 @@ import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import VolumeOffIcon from "@material-ui/icons/VolumeOff";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import ScreenShareIcon from "@material-ui/icons/ScreenShare";
+import StopScreenShareIcon from "@material-ui/icons/StopScreenShare";
 import { Tooltip, Button } from "@material-ui/core";
 import { apiKey, sessionId, token } from "./constants";
 import {
@@ -17,8 +19,10 @@ import {
   toggleVideoSubscribtion,
   initializeSession,
   stopStreaming,
+  toggleScreenShare,
 } from "./VonageVideoAPIIntegrtion";
 import "./VideoChatComponent.scss";
+import { Stop } from "@material-ui/icons";
 
 function VideoChatComponent() {
   const [isInterviewStarted, setIsInterviewStarted] = useState(false);
@@ -27,6 +31,7 @@ function VideoChatComponent() {
   const [isAudioSubscribed, setIsAudioSubscribed] = useState(true);
   const [isVideoSubscribed, setIsVideoSubscribed] = useState(true);
   const [isStreamSubscribed, setIsStreamSubscribed] = useState(false);
+  const [isScreenShared, setIsScreenShared] = useState(false);
   const isSubscribed = useSelector(
     (state) => state.videoChat.isStreamSubscribed
   );
@@ -56,6 +61,10 @@ function VideoChatComponent() {
   const onToggleVideoSubscribtion = (action) => {
     setIsVideoSubscribed(action);
     toggleVideoSubscribtion(action);
+  };
+  const onToggleScreenSharing = (action) => {
+    toggleScreenShare(action);
+    setIsScreenShared(action);
   };
 
   const renderToolbar = () => {
@@ -89,6 +98,21 @@ function VideoChatComponent() {
               <Tooltip title="camera off">
                 <VideocamOffIcon
                   onClick={() => onToggleVideo(true)}
+                  className="off-icon"
+                />
+              </Tooltip>
+            )}
+            {isScreenShared ? (
+              <Tooltip title="screen on">
+                <ScreenShareIcon
+                  onClick={() => onToggleScreenSharing(false)}
+                  className="on-icon"
+                />
+              </Tooltip>
+            ) : (
+              <Tooltip title="screen off">
+                <StopScreenShareIcon
+                  onClick={() => onToggleScreenSharing(true)}
                   className="off-icon"
                 />
               </Tooltip>
@@ -136,23 +160,23 @@ function VideoChatComponent() {
 
   return (
     <>
-      <div className='actions-btns'>
-      <Button
-        onClick={() => setIsInterviewStarted(true)}
-        disabled={isInterviewStarted}
-        color='primary'
-        variant="contained"
-      >
-        Start chat
-      </Button>
-      <Button
-        onClick={() => setIsInterviewStarted(false)}
-        disabled={!isInterviewStarted}
-        color='secondary'
-        variant="contained"
-      >
-        Finish chat
-      </Button>
+      <div className="actions-btns">
+        <Button
+          onClick={() => setIsInterviewStarted(true)}
+          disabled={isInterviewStarted}
+          color="primary"
+          variant="contained"
+        >
+          Start chat
+        </Button>
+        <Button
+          onClick={() => setIsInterviewStarted(false)}
+          disabled={!isInterviewStarted}
+          color="secondary"
+          variant="contained"
+        >
+          Finish chat
+        </Button>
       </div>
       <div className="video-container">
         <div
@@ -164,7 +188,7 @@ function VideoChatComponent() {
           {isStreamSubscribed && renderToolbar()}
         </div>
         <div
-          id="publisher"
+          id={`${isScreenShared ? "screen-preview" : "publisher"}`}
           className={`${
             isStreamSubscribed ? "additional-video" : "main-video"
           }`}
