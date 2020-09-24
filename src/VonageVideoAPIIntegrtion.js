@@ -8,7 +8,7 @@ function handleError(error) {
   }
 }
 
-let session, publisher, subscriber, screenPreview, pubOptions;
+let session, publisher, subscriber, screenSharePublisher, pubOptions;
 
 export function initializeSession(apiKey, sessionId, token) {
   session = OT.initSession(apiKey, sessionId);
@@ -58,7 +58,10 @@ export function initializeSession(apiKey, sessionId, token) {
 }
 
 export function stopStreaming() {
-  session && session.unpublish(publisher);
+  if (session) {
+    session.disconnect();
+    session.unpublish(publisher);
+  }
 }
 
 // The following functions are used in functionlaity customization
@@ -75,15 +78,30 @@ export function toggleVideoSubscribtion(state) {
   subscriber.subscribeToVideo(state);
 }
 
-export function toggleScreenShare(state) {
-  if (state === true) {
-    screenPreview = OT.initPublisher(
-      "screen-preview",
-      { videoSource: "screen" },
-      handleError
-    );
-    session.publish(screenPreview, handleError);
-  } else {
-    session.unpublish(screenPreview);
-  }
+export function startScreenShare() {
+  OT.checkScreenSharingCapability((response) => {
+    if (!response.supported || response.extensionRegistered === false) {
+      alert("Screen sharing not supported");
+    } else if (response.extensionInstalled === false) {
+      alert("Browser requires extension");
+    } else {
+      screenSharePublisher = OT.initPublisher(
+        "screen",
+        {
+          insertMode: "append",
+          width: "100%",
+          height: "100%",
+          videoSource: "screen",
+          publishAudio: true,
+        },
+        handleError
+      );
+      session.publish(screenSharePublisher, handleError);
+    }
+  });
+}
+
+export function stopScreenShare() {
+  screenSharePublisher.destroy();
+  session.unpublish(screenSharePublisher);
 }

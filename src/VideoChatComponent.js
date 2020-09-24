@@ -19,10 +19,11 @@ import {
   toggleVideoSubscribtion,
   initializeSession,
   stopStreaming,
-  toggleScreenShare,
+  startScreenShare,
+  stopScreenShare,
 } from "./VonageVideoAPIIntegrtion";
 import "./VideoChatComponent.scss";
-import { Stop } from "@material-ui/icons";
+// import { Stop } from "@material-ui/icons";
 
 function VideoChatComponent() {
   const [isInterviewStarted, setIsInterviewStarted] = useState(false);
@@ -61,10 +62,6 @@ function VideoChatComponent() {
   const onToggleVideoSubscribtion = (action) => {
     setIsVideoSubscribed(action);
     toggleVideoSubscribtion(action);
-  };
-  const onToggleScreenSharing = (action) => {
-    toggleScreenShare(action);
-    setIsScreenShared(action);
   };
 
   const renderToolbar = () => {
@@ -105,14 +102,20 @@ function VideoChatComponent() {
             {isScreenShared ? (
               <Tooltip title="screen on">
                 <ScreenShareIcon
-                  onClick={() => onToggleScreenSharing(false)}
+                  onClick={() => {
+                    stopScreenShare();
+                    setIsScreenShared(false);
+                  }}
                   className="on-icon"
                 />
               </Tooltip>
             ) : (
               <Tooltip title="screen off">
                 <StopScreenShareIcon
-                  onClick={() => onToggleScreenSharing(true)}
+                  onClick={() => {
+                    startScreenShare();
+                    setIsScreenShared(true);
+                  }}
                   className="off-icon"
                 />
               </Tooltip>
@@ -178,24 +181,29 @@ function VideoChatComponent() {
           Finish chat
         </Button>
       </div>
-      <div className="video-container">
-        <div
-          id="subscriber"
-          className={`${
-            isStreamSubscribed ? "main-video" : "additional-video"
-          }`}
-        >
-          {isStreamSubscribed && renderToolbar()}
+      {isInterviewStarted && (
+        <div className="video-container">
+          <div id="screen" className="additional-video">
+            {isStreamSubscribed && renderToolbar()}
+          </div>
+          <div
+            id="subscriber"
+            className={`${
+              isStreamSubscribed ? "main-video" : "additional-video"
+            }`}
+          >
+            {isStreamSubscribed && renderToolbar()}
+          </div>
+          <div
+            id="publisher"
+            className={`${
+              isStreamSubscribed ? "additional-video" : "main-video"
+            }`}
+          >
+            {!isStreamSubscribed && renderToolbar()}
+          </div>
         </div>
-        <div
-          id={`${isScreenShared ? "screen-preview" : "publisher"}`}
-          className={`${
-            isStreamSubscribed ? "additional-video" : "main-video"
-          }`}
-        >
-          {!isStreamSubscribed && renderToolbar()}
-        </div>
-      </div>
+      )}
     </>
   );
 }
