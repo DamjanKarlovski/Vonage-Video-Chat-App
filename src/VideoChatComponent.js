@@ -161,6 +161,17 @@ function VideoChatComponent() {
     );
   };
 
+  const renderPubScreenShared = () => {
+    return (
+      <>
+        <div id="subscriber" className="additional-video-sub"></div>
+        <div id="publisher" className="additional-video-pub">
+          {renderToolbar()}
+        </div>
+      </>
+    );
+  };
+
   return (
     <>
       <div className="actions-btns">
@@ -182,27 +193,30 @@ function VideoChatComponent() {
         </Button>
       </div>
       {isInterviewStarted && (
-        <div className="video-container">
-          <div id="screen" className="additional-video">
-            {isStreamSubscribed && renderToolbar()}
+        <>
+          {isScreenShared ? <div>{renderPubScreenShared()}</div> : null}
+          <div className="video-container">
+            <div id="screen" className="additional-video-sub"></div>
+            <div
+              id="subscriber"
+              className={`${
+                !isStreamSubscribed || isScreenShared
+                  ? "additional-video-sub"
+                  : "main-video"
+              }`}
+            >
+              {isStreamSubscribed && renderToolbar()}
+            </div>
+            <div
+              id="publisher"
+              className={`${
+                isStreamSubscribed ? "additional-video-pub" : "main-video"
+              }`}
+            >
+              {!isStreamSubscribed && renderToolbar()}
+            </div>
           </div>
-          <div
-            id="subscriber"
-            className={`${
-              isStreamSubscribed ? "main-video" : "additional-video"
-            }`}
-          >
-            {isStreamSubscribed && renderToolbar()}
-          </div>
-          <div
-            id="publisher"
-            className={`${
-              isStreamSubscribed ? "additional-video" : "main-video"
-            }`}
-          >
-            {!isStreamSubscribed && renderToolbar()}
-          </div>
-        </div>
+        </>
       )}
     </>
   );

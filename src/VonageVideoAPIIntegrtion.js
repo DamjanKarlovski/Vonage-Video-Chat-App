@@ -8,7 +8,12 @@ function handleError(error) {
   }
 }
 
-let session, publisher, subscriber, screenSharePublisher, pubOptions;
+let session,
+  publisher,
+  subscriber,
+  screenSharePublisher,
+  pubOptions,
+  subOptions;
 
 export function initializeSession(apiKey, sessionId, token) {
   session = OT.initSession(apiKey, sessionId);
@@ -19,6 +24,7 @@ export function initializeSession(apiKey, sessionId, token) {
     style: { buttonDisplayMode: "off" },
     width: "100%",
     height: "100%",
+    fitMode: "contain",
     // videoSource: "camera",
   };
   // Create a publisher
@@ -26,15 +32,16 @@ export function initializeSession(apiKey, sessionId, token) {
 
   // Subscribing to stream
   session.on("streamCreated", function (event) {
+    subOptions = {
+      insertMode: "append",
+      style: { buttonDisplayMode: "off" },
+      width: "100%",
+      height: "100%",
+    };
     subscriber = session.subscribe(
       event.stream,
       "subscriber",
-      {
-        insertMode: "append",
-        style: { buttonDisplayMode: "off" },
-        width: "100%",
-        height: "100%",
-      },
+      subOptions,
       handleError
     );
     store.dispatch(handleSubscribtion(true));
@@ -42,8 +49,14 @@ export function initializeSession(apiKey, sessionId, token) {
 
   // Do some action on destroying the stream
   session.on("streamDestroyed", function (event) {
-    console.log("The Video chat has ended");
-    store.dispatch(handleSubscribtion(false));
+    if (event.reason === "clientDisconnected") {
+      event.preventDefault();
+      const subscribers = session.getSubscribersForStream(event.stream);
+      console.log("subscribers: ", subscribers);
+    } else {
+      console.log("The Video chat has ended", event.reason);
+      store.dispatch(handleSubscribtion(false));
+    }
   });
 
   // Connect to the session
@@ -79,6 +92,7 @@ export function toggleVideoSubscribtion(state) {
 }
 
 export function startScreenShare() {
+  //check if browser supports screen share
   OT.checkScreenSharingCapability((response) => {
     if (!response.supported || response.extensionRegistered === false) {
       alert("Screen sharing not supported");
@@ -89,19 +103,26 @@ export function startScreenShare() {
         "screen",
         {
           insertMode: "append",
+          style: { buttonDisplayMode: "off" },
           width: "100%",
           height: "100%",
           videoSource: "screen",
           publishAudio: true,
+          fitMode: "contain",
         },
         handleError
       );
       session.publish(screenSharePublisher, handleError);
     }
   });
+  screenSharePublisher.on("streamDestroyed", function (event) {
+    if (event.reason === "mediaStopped") {
+      event.preventDefault();
+    }
+  });
 }
 
 export function stopScreenShare() {
   screenSharePublisher.destroy();
-  session.unpublish(screenSharePublisher);
+  // session.unpublish(screenSharePublisher);
 }
