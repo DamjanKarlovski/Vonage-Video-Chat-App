@@ -49,14 +49,14 @@ export function initializeSession(apiKey, sessionId, token) {
 
   // Do some action on destroying the stream
   session.on("streamDestroyed", function (event) {
-    if (event.reason === "clientDisconnected") {
-      event.preventDefault();
-      const subscribers = session.getSubscribersForStream(event.stream);
-      console.log("subscribers: ", subscribers);
-    } else {
-      console.log("The Video chat has ended", event.reason);
-      store.dispatch(handleSubscribtion(false));
-    }
+    // if (event.reason === "clientDisconnected") {
+    //   event.preventDefault();
+    //   const subscribers = session.getSubscribersForStream(event.stream);
+    //   console.log("subscribers: ", subscribers);
+    // } else {
+    console.log("The Video chat has ended", event.reason);
+    store.dispatch(handleSubscribtion(false));
+    // }
   });
 
   // Connect to the session
@@ -72,6 +72,7 @@ export function initializeSession(apiKey, sessionId, token) {
 
 export function stopStreaming() {
   if (session) {
+    store.dispatch(handleSubscribtion(false));
     session.disconnect();
     session.unpublish(publisher);
   }
